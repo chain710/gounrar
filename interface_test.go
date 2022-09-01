@@ -3,6 +3,7 @@ package gounrar
 import (
 	"github.com/stretchr/testify/require"
 	"io"
+	"path/filepath"
 	"testing"
 )
 
@@ -24,14 +25,14 @@ func TestSeek(t *testing.T) {
 		},
 		{
 			name:          "rar5",
-			path:          "testdata/test-rar5.rar",
+			path:          "testdata/测试-rar5.rar",
 			pos:           23,
-			expectFile:    "dir/2.txt",
+			expectFile:    filepath.Join("dir", "2.txt"),
 			expectContent: "world",
 		},
 		{
 			name:        "seek error",
-			path:        "testdata/test-rar5.rar",
+			path:        "testdata/测试-rar5.rar",
 			pos:         20,
 			expectError: true,
 		},
@@ -75,11 +76,11 @@ func TestSimple(t *testing.T) {
 		},
 		{
 			name:       "rar5",
-			path:       "testdata/test-rar5.rar",
+			path:       "testdata/测试-rar5.rar",
 			expectDirs: []string{"dir"},
 			expectFiles: map[string]string{
-				"1.txt":     "hello",
-				"dir/2.txt": "world",
+				"1.txt":                       "hello",
+				filepath.Join("dir", "2.txt"): "world",
 			},
 		},
 	}

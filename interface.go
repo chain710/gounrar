@@ -94,7 +94,7 @@ func (a *Archive) readHeader() (*Header, error) {
 	}
 
 	header := Header{
-		FileName:   C.GoString(&hdr.FileName[0]),
+		FileName:   getFileName(&hdr),
 		Type:       uint(hdr.Type),
 		Flags:      uint(hdr.Flags),
 		PackSize:   int64(hdr.PackSize),
@@ -204,11 +204,20 @@ func Open(path string, options ...Option) (*Archive, error) {
 	for _, apply := range options {
 		apply(&opt)
 	}
-	option := C.RAROpenArchiveData{}
-	option.ArcName = C.CString(path)
+	option := C.RAROpenArchiveDataEx{}
+	if err := setOpenPath(&option, path); err != nil {
+		return nil, err
+	}
+	if option.ArcName != nil {
+		defer C.free(unsafe.Pointer(option.ArcName))
+	}
+
+	if option.ArcNameW != nil {
+		defer C.free(unsafe.Pointer(option.ArcNameW))
+	}
+
 	option.OpenMode = C.RAR_OM_EXTRACT // or RAR_OM_LIST
-	defer C.free(unsafe.Pointer(option.ArcName))
-	hdl := C.RAROpenArchive(&option)
+	hdl := C.RAROpenArchiveEx(&option)
 	if C.ERAR_SUCCESS == option.OpenResult {
 		return &Archive{
 			path: path,
