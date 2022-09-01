@@ -1,0 +1,5 @@
+go.sum
+.idea
+*.o
+.trash
+.DS_Store
