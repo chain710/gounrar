@@ -247,7 +247,10 @@ int PASCAL RARReadHeaderEx(void* hArcData, RARHeaderDataEx *D)
     WideToChar(D->ArcNameW,D->ArcName,ASIZE(D->ArcName));
 
     wcsncpy(D->FileNameW,hd->FileName,ASIZE(D->FileNameW));
-    WideToChar(D->FileNameW,D->FileName,ASIZE(D->FileName));
+    if (!WideToChar(D->FileNameW,D->FileName,ASIZE(D->FileName))) {
+      // linux need this
+      WideToUtf(D->FileNameW,D->FileName,ASIZE(D->FileName));
+    }
 #ifdef _WIN_ALL
     CharToOemA(D->FileName,D->FileName);
 #endif
